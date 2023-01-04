@@ -11,7 +11,7 @@ class CustomUserManager(BaseUserManager):
     for authentication instead of usernames.
     """
 
-    def create_user(self, email, password, **extra_fields):
+    def create_user(self, email, password, username='', last_name='', first_name='', **extra_fields):
         """
         Create and save a User with the given email and password.
         """
@@ -21,6 +21,9 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
+        user.username = username
+        user.last_name = last_name
+        user.first_name = first_name
         user.save()
         return user
 
@@ -62,6 +65,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class SubscribingAuthors(models.Model):
+    """
+    Подписка на авторов
+    """
     user = models.OneToOneField(
         CustomUser,
         on_delete=models.CASCADE
@@ -75,43 +81,38 @@ class SubscribingAuthors(models.Model):
 
 class Tag(models.Model):
     name = models.CharField('Название', max_length=150, unique=True)
-    color_hex = models.CharField('Цветовой HEX-код', max_length=8, unique=True)
+    color = models.CharField('Цветовой HEX-код', max_length=8, unique=True)
     slug = models.SlugField(max_length=50, unique=True)
-
-
-class UnitsMeasurement(models.Model):
-    name = models.CharField('Название', max_length=150)
 
 
 class Ingredient(models.Model):
     name = models.CharField('Название', max_length=150)
-    units_measurement = models.ManyToManyField(UnitsMeasurement)
+    measurement_unit = models.CharField('Единицы измерения', max_length=150)
 
 
 class IngredientForRecipe(models.Model):
-    ingredient = models.OneToOneField(Ingredient, on_delete=models.CASCADE)
-    units_measurement = models.OneToOneField(UnitsMeasurement, on_delete=models.CASCADE)
-    quantity = models.FloatField('Кол-во')
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    amount = models.FloatField('Кол-во')
 
 
 class Recipe(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField('Название', max_length=150)
     image = models.ImageField(upload_to='recipe_image')
-    description = models.TextField('Описание')
-    ingredient = models.ManyToManyField(
+    text = models.TextField('Описание')
+    ingredients = models.ManyToManyField(
         IngredientForRecipe,
         verbose_name='Ингредиенты'
     )
-    tag = models.ManyToManyField(
+    tags = models.ManyToManyField(
         Tag,
         verbose_name='Теги')
-    time_minute = models.IntegerField('Время приготовления в минутах')
+    cooking_time = models.IntegerField('Время приготовления в минутах')
 
 
 class FavoritesList(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    shopping_list = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    favorites_list = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
 
 class ShoppingList(models.Model):
