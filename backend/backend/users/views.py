@@ -1,20 +1,19 @@
 from django.contrib.auth import authenticate
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
-
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 from .permission import IsNotAuth
 from .serialize import UserSerializer, NewPassword, AllUserSerializer
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from api.models import CustomUser, SubscribingAuthors, FavoritesList, ShoppingList
+from api.pagination import PaginatorDefault
 
 
 class UserCreate(APIView):
     serializer_class = UserSerializer
-
-    # permission_classes = [IsNotAuth]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -53,10 +52,7 @@ class UserCreate(APIView):
         else:
             subscribing_authors = None
         for user in CustomUser.objects.all():
-            if subscribing_authors is not None and user in subscribing_authors.all():
-                temp = True
-            else:
-                temp = False
+            temp = subscribing_authors is not None and user in subscribing_authors.all()
             data.append(
                 {
                     'email': user.email,
@@ -67,7 +63,8 @@ class UserCreate(APIView):
                     'is_subscribed': temp
                 }
             )
-        return Response(data=data, status=status.HTTP_200_OK)
+        p = PaginatorDefault(data=data, request=request)
+        return Response(data=p.str(), status=status.HTTP_200_OK)
 
 
 class UserLogin(APIView):
@@ -79,11 +76,9 @@ class UserLogin(APIView):
         email = request.data.get('email')
         password = request.data.get('password')
         if email and password:
-            user = authenticate(
-                request=request,
-                email=email, password=password
-            )
-            if user:
+            if user := authenticate(
+                    request=request, email=email, password=password
+            ):
                 token, created = Token.objects.get_or_create(user=user)
 
                 return Response({'token': token.key}, status=status.HTTP_201_CREATED)
@@ -120,3 +115,37 @@ class Logout(APIView):
 class AllUsers(ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = AllUserSerializer
+
+
+class UserGetId(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        user_search = get_object_or_404(CustomUser, id=id)
+        sub_list = get_object_or_404(SubscribingAuthors, user=request.user)
+        data = {
+            "email": user_search.email,
+            "id": user_search.id,
+            "username": user_search.username,
+            "first_name": user_search.first_name,
+            "last_name": user_search.last_name,
+            "is_subscribed": user_search.id
+                             in sub_list.subscribing_authors.values_list('id', flat=True),
+        }
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class GetMe(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_search = get_object_or_404(CustomUser, id=request.user.id)
+        data = {
+            "email": user_search.email,
+            "id": user_search.id,
+            "username": user_search.username,
+            "first_name": user_search.first_name,
+            "last_name": user_search.last_name,
+            "is_subscribed": False
+        }
+        return Response(data=data, status=status.HTTP_200_OK)

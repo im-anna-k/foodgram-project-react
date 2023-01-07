@@ -15,3 +15,22 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
+  web:
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+    build:
+      context: ../backend/backend
+      dockerfile: Dockerfile
+    volumes:
+      - .:/opt/backend
+    depends_on:
+      - "database"
+  database:
+    image: postgres:14.6-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=GroceryDB
+    ports:
+      - 5432:5432
