@@ -8,7 +8,7 @@ from .permission import IsNotAuth
 from .serialize import UserSerializer, NewPassword, AllUserSerializer
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from api.models import CustomUser, SubscribingAuthors
+from api.models import CustomUser, SubscribingAuthors, FavoritesList, ShoppingList
 
 
 class UserCreate(APIView):
@@ -26,7 +26,12 @@ class UserCreate(APIView):
                 last_name=serializer.validated_data.get('last_name'),
                 first_name=serializer.validated_data.get('first_name'),
             )
-
+            FavoritesList.objects.create(
+                user=user
+            )
+            ShoppingList.objects.create(
+                user=user
+            )
             SubscribingAuthors.objects.create(
                 user=user
             )

@@ -7,7 +7,7 @@ from api.models import Tag, Ingredient, IngredientForRecipe, Recipe
 class TagSerializers(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['id', 'name', 'color', 'slug', 'password']
+        fields = ['id', 'name', 'color', 'slug']
 
 
 class IngredientSerializers(serializers.ModelSerializer):
@@ -23,9 +23,21 @@ class IngredientCreateSerializers(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializers(serializers.ModelSerializer):
+    def validate(self, data):
+        for el in data.get('ingredients', []):
+            if el.amount < 1.0:
+                raise serializers.ValidationError({'amount': "Убедитесь, что это значение больше либо равно 1."})
+        return data
+
     class Meta:
         model = Recipe
         fields = '__all__'
+
+
+class RecipeForShoppingList(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ['id', 'name', 'image', 'cooking_time']
 
 
 class IngredientForRecipeSerializers(serializers.ModelSerializer):

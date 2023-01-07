@@ -112,9 +112,9 @@ class Recipe(models.Model):
 
 class FavoritesList(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    favorites_list = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    favorites_list = models.ManyToManyField(Recipe, blank=True)
 
 
 class ShoppingList(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    shopping_list = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    shopping_list = models.ManyToManyField(Recipe, blank=True)
