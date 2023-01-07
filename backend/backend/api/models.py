@@ -84,6 +84,9 @@ class Tag(models.Model):
     color = models.CharField('Цветовой HEX-код', max_length=8, unique=True)
     slug = models.SlugField(max_length=50, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Ingredient(models.Model):
     name = models.CharField('Название', max_length=150)

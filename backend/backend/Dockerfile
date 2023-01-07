@@ -1,15 +1,21 @@
 FROM python:3.11
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-RUN mkdir /code
-WORKDIR /code
-RUN pip install --upgrade pip
-COPY requirements.txt /code/
+# Создать директорию вашего приложения.
+RUN mkdir /app
 
-RUN pip install -r requirements.txt
-COPY . /code/
+# Скопировать с локального компьютера файл зависимостей
+# в директорию /app.
+COPY requirements.txt /app
 
-EXPOSE 8000
+# Выполнить установку зависимостей внутри контейнера.
+RUN pip3 install -r /app/requirements.txt --no-cache-dir
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Скопировать содержимое директории /api_yamdb c локального компьютера
+# в директорию /app.
+COPY / /app
+
+# Сделать директорию /app рабочей директорией.
+WORKDIR /app
+
+# Выполнить запуск сервера разработки при старте контейнера.
+CMD ["gunicorn", "api_yamdb.wsgi:application", "--bind", "0:8000" ]
