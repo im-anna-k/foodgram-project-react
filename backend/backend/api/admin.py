@@ -15,12 +15,11 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ("author", "name", "tags")
 
     def favourites(self, obj):
-        count = 0
         result = FavoritesList.objects.all()
-        for el in result:
-            if obj.id in el.favorites_list.values_list('id', flat=True):
-                count += 1
-        return count
+        return sum(
+            obj.id in el.favorites_list.values_list('id', flat=True)
+            for el in result
+        )
 
     favourites.short_description = "Favourites"
 
