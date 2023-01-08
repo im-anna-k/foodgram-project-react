@@ -18,14 +18,14 @@ services:
   web:
     ports:
       - "8000:8000"
-    command: python manage.py runserver 0.0.0.0:8000
+    restart: always
     build:
       context: ../backend/backend
       dockerfile: Dockerfile
-    volumes:
-      - .:/opt/backend
     depends_on:
       - "database"
+    env_file:
+      - ../backend/backend/.env
   database:
     image: postgres:14.6-alpine
     environment:
