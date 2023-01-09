@@ -4,10 +4,10 @@ from django.core.paginator import Paginator
 class PaginatorDefault:
     def __init__(self, data, request):
         self.path = (
-            f'{str(request.scheme)}://'
-            + str(request.META["HTTP_HOST"])
-            + str(request.path)
-            + '?page='
+                f'{str(request.scheme)}://'
+                + str(request.META["HTTP_HOST"])
+                + str(request.path)
+                + '?page='
         )
         limit = int(request.GET.get('limit', 10))
         page = int(request.GET.get('page', 1))

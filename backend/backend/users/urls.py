@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import UserCreate, UserLogin, Logout, SetPassword, AllUsers, UserGetId, GetMe
+from .views import (AllUsers, GetMe, Logout, SetPassword, UserCreate,
+                    UserGetId, UserLogin)
 
 urlpatterns = [
     path('api/users/', UserCreate.as_view()),

@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
+
 import environ
 
 env = environ.Env(
-    # set casting, default value
     DEBUG=(bool, False)
 )
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -136,6 +136,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 AUTH_USER_MODEL = 'api.CustomUser'
+
+
+##################################################################
+# DATABASES settings
+##################################################################
+
 
 DATABASES = {
     'default': {

@@ -1,15 +1,17 @@
-from django.contrib.auth import authenticate
-from rest_framework import status
-from rest_framework.generics import ListAPIView
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
-from .permission import IsNotAuth
-from .serialize import UserSerializer, NewPassword, AllUserSerializer
-from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-from api.models import CustomUser, SubscribingAuthors, FavoritesList, ShoppingList
+from api.models import (CustomUser, FavoritesList, ShoppingList,
+                        SubscribingAuthors)
 from api.pagination import PaginatorDefault
+from django.contrib.auth import authenticate
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .permission import IsNotAuth
+from .serialize import AllUserSerializer, NewPassword, UserSerializer
 
 
 class UserCreate(APIView):

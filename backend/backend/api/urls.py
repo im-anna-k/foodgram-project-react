@@ -1,7 +1,8 @@
+from api.views import (CreateRecipe, DownloadShoppingList, FavoriteCrud,
+                       IngredientGet, IngredientsList, RecipeGet,
+                       ShoppingListCreate, SubscribingAuthorsCreate,
+                       SubscribingAuthorsCrud, TagGet, TagList)
 from django.urls import path
-
-from api.views import TagList, TagGet, IngredientsList, IngredientGet, CreateRecipe, RecipeGet, ShoppingListCreate, \
-    DownloadShoppingList, FavoriteCrud, SubscribingAuthorsCrud, SubscribingAuthorsCreate
 
 urlpatterns = [
     # Теги

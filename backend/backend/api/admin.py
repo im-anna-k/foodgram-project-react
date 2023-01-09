@@ -1,7 +1,7 @@
+from api.models import (CustomUser, FavoritesList, Ingredient,
+                        IngredientForRecipe, Recipe, ShoppingList,
+                        SubscribingAuthors, Tag)
 from django.contrib import admin
-
-from api.models import CustomUser, Recipe, Ingredient, Tag, ShoppingList, FavoritesList, SubscribingAuthors, \
-    IngredientForRecipe
 
 
 @admin.register(CustomUser)

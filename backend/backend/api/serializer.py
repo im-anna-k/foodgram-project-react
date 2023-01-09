@@ -1,19 +1,17 @@
-from django.contrib.auth.models import User
+from api.models import Ingredient, IngredientForRecipe, Recipe, Tag
 from rest_framework import serializers
-
-from api.models import Tag, Ingredient, IngredientForRecipe, Recipe
 
 
 class TagSerializers(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['id', 'name', 'color', 'slug']
+        fields = ('id', 'name', 'color', 'slug')
 
 
 class IngredientSerializers(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ['id', 'name', 'measurement_unit']
+        fields = ('id', 'name', 'measurement_unit')
 
 
 class IngredientCreateSerializers(serializers.ModelSerializer):
@@ -37,10 +35,10 @@ class RecipeCreateSerializers(serializers.ModelSerializer):
 class RecipeForShoppingList(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ['id', 'name', 'image', 'cooking_time']
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class IngredientForRecipeSerializers(serializers.ModelSerializer):
     class Meta:
         model = IngredientForRecipe
-        fields = ['ingredient', 'amount']
+        fields = ('ingredient', 'amount')

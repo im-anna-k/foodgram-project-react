@@ -1,14 +1,16 @@
+from api.models import (CustomUser, FavoritesList, Ingredient,
+                        IngredientForRecipe, Recipe, ShoppingList,
+                        SubscribingAuthors, Tag)
+from api.pagination import PaginatorDefault
+from api.serializer import (IngredientSerializers, RecipeCreateSerializers,
+                            RecipeForShoppingList, TagSerializers)
+from django.shortcuts import get_object_or_404
 from fpdf import FPDF
 from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from api.models import CustomUser, SubscribingAuthors, Tag, Ingredient, IngredientForRecipe, Recipe, FavoritesList, \
-    ShoppingList
-from api.pagination import PaginatorDefault
-from api.serializer import TagSerializers, IngredientSerializers, RecipeCreateSerializers, RecipeForShoppingList
-from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
 
 
 class TagList(ListAPIView):
@@ -79,11 +81,11 @@ def ingredient_data(ingredient):
 
 
 def get_lists(request):
-    subscribing_authors = SubscribingAuthors.objects.get(user=request.user.id).subscribing_authors.values_list(
+    subscribing_authors = get_object_or_404(SubscribingAuthors, user=request.user.id).subscribing_authors.values_list(
         'id', flat=True
     )
-    favorites_list = FavoritesList.objects.get(user=request.user.id).favorites_list.values_list('id', flat=True)
-    shopping_list = ShoppingList.objects.get(user=request.user.id).shopping_list.values_list('id', flat=True)
+    favorites_list = get_object_or_404(FavoritesList, user=request.user.id).favorites_list.values_list('id', flat=True)
+    shopping_list = get_object_or_404(ShoppingList, user=request.user.id).shopping_list.values_list('id', flat=True)
     return subscribing_authors, favorites_list, shopping_list
 
 
@@ -166,11 +168,12 @@ class CreateRecipe(ListAPIView, APIView):
                 ingredient_data(ingredient=ingredient)
                 for ingredient in recipe.get('ingredients')
             ]
-            check_filter(
-                filter_is_favorite=filter_is_favorite, is_in_shopping_cart=is_in_shopping_cart,
-                filter_author=filter_author,
-                filter_tags=filter_tags, recipe=recipe, shopping_list=shopping_list,
-                favorites_list=favorites_list, author=author, tags=tags)
+            if check_filter(
+                    filter_is_favorite=filter_is_favorite, is_in_shopping_cart=is_in_shopping_cart,
+                    filter_author=filter_author,
+                    filter_tags=filter_tags, recipe=recipe, shopping_list=shopping_list,
+                    favorites_list=favorites_list, author=author, tags=tags):
+                continue
             data.append(
                 get_data_ingredient(
                     recipe=recipe, author=author, subscribing_authors=subscribing_authors,
