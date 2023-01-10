@@ -1,5 +1,9 @@
-from api.models import (CustomUser, FavoritesList, ShoppingList,
-                        SubscribingAuthors)
+from api.models import (
+    CustomUser,
+    FavoritesList,
+    ShoppingList,
+    SubscribingAuthors,
+)
 from api.pagination import PaginatorDefault
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
@@ -27,34 +31,37 @@ class UserCreate(APIView):
                 last_name=serializer.validated_data.get('last_name'),
                 first_name=serializer.validated_data.get('first_name'),
             )
-            FavoritesList.objects.create(
-                user=user
+            FavoritesList.objects.create(user=user)
+            ShoppingList.objects.create(user=user)
+            SubscribingAuthors.objects.create(user=user)
+            user = get_object_or_404(
+                CustomUser, email=serializer.validated_data.get('email')
             )
-            ShoppingList.objects.create(
-                user=user
-            )
-            SubscribingAuthors.objects.create(
-                user=user
-            )
-            user = CustomUser.objects.get(email=serializer.validated_data.get('email'))
             data = {
                 'email': user.email,
                 'id': user.id,
                 'username': user.username,
                 'first_name': user.first_name,
-                'last_name': user.last_name
+                'last_name': user.last_name,
             }
             return Response(status=status.HTTP_201_CREATED, data=data)
-        return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+        return Response(
+            status=status.HTTP_400_BAD_REQUEST, data=serializer.errors
+        )
 
     def get(self, request, *args, **kwargs):
         data = []
         if request.user.is_authenticated is not False:
-            subscribing_authors = SubscribingAuthors.objects.get(user=request.user).subscribing_authors
+            subscribing_authors = get_object_or_404(
+                SubscribingAuthors, user=request.user
+            ).subscribing_authors
         else:
             subscribing_authors = None
         for user in CustomUser.objects.all():
-            temp = subscribing_authors is not None and user in subscribing_authors.all()
+            temp = (
+                subscribing_authors is not None
+                and user in subscribing_authors.all()
+            )
             data.append(
                 {
                     'email': user.email,
@@ -62,7 +69,7 @@ class UserCreate(APIView):
                     'username': user.username,
                     'first_name': user.first_name,
                     'last_name': user.last_name,
-                    'is_subscribed': temp
+                    'is_subscribed': temp,
                 }
             )
         p = PaginatorDefault(data=data, request=request)
@@ -79,11 +86,13 @@ class UserLogin(APIView):
         password = request.data.get('password')
         if email and password:
             if user := authenticate(
-                    request=request, email=email, password=password
+                request=request, email=email, password=password
             ):
                 token, created = Token.objects.get_or_create(user=user)
 
-                return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+                return Response(
+                    {'token': token.key}, status=status.HTTP_201_CREATED
+                )
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -94,16 +103,22 @@ class SetPassword(APIView):
         serializer = NewPassword(data=request.data)
         if serializer.is_valid():
             user = request.user
-            if user.check_password(serializer.validated_data.get('current_password')):
-                user.set_password(serializer.validated_data.get('new_password'))
+            if user.check_password(
+                serializer.validated_data.get('current_password')
+            ):
+                user.set_password(
+                    serializer.validated_data.get('new_password')
+                )
                 user.save()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response(status=status.HTTP_401_UNAUTHORIZED,
-                                data={
-                                    "detail": "Учетные данные не были предоставлены."
-                                })
-        return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+                return Response(
+                    status=status.HTTP_401_UNAUTHORIZED,
+                    data={"detail": "Учетные данные не были предоставлены."},
+                )
+        return Response(
+            status=status.HTTP_400_BAD_REQUEST, data=serializer.errors
+        )
 
 
 class Logout(APIView):
@@ -132,7 +147,7 @@ class UserGetId(APIView):
             "first_name": user_search.first_name,
             "last_name": user_search.last_name,
             "is_subscribed": user_search.id
-                             in sub_list.subscribing_authors.values_list('id', flat=True),
+            in sub_list.subscribing_authors.values_list('id', flat=True),
         }
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -148,6 +163,6 @@ class GetMe(APIView):
             "username": user_search.username,
             "first_name": user_search.first_name,
             "last_name": user_search.last_name,
-            "is_subscribed": False
+            "is_subscribed": False,
         }
         return Response(data=data, status=status.HTTP_200_OK)

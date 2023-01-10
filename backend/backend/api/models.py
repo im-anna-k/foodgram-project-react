@@ -1,5 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import AbstractUser, PermissionsMixin, User
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -38,14 +38,18 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField('Логин', unique=True, max_length=150, blank=True)
+    username = models.CharField(
+        'Логин', unique=True, max_length=150, blank=True
+    )
     email = models.EmailField('Email', unique=True)
     first_name = models.CharField('Имя', max_length=150, blank=True)
     last_name = models.CharField('Фамилия', max_length=150, blank=True)
     is_staff = models.BooleanField('Сотрудник', default=False)
     is_active = models.BooleanField('Активирован', default=True)
     is_suspended = models.BooleanField('Заблокирован', default=False)
-    date_joined = models.DateTimeField('Дата регистрации', default=timezone.now)
+    date_joined = models.DateTimeField(
+        'Дата регистрации', default=timezone.now
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -68,14 +72,12 @@ class SubscribingAuthors(models.Model):
     """
     Подписка на авторов
     """
-    user = models.OneToOneField(
-        CustomUser,
-        on_delete=models.CASCADE
-    )
+
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     subscribing_authors = models.ManyToManyField(
         CustomUser,
         verbose_name='Список избранного',
-        related_name='subscribing_authors'
+        related_name='subscribing_authors',
     )
 
 
@@ -104,12 +106,9 @@ class Recipe(models.Model):
     image = models.ImageField(upload_to='recipe_image')
     text = models.TextField('Описание')
     ingredients = models.ManyToManyField(
-        IngredientForRecipe,
-        verbose_name='Ингредиенты'
+        IngredientForRecipe, verbose_name='Ингредиенты'
     )
-    tags = models.ManyToManyField(
-        Tag,
-        verbose_name='Теги')
+    tags = models.ManyToManyField(Tag, verbose_name='Теги')
     cooking_time = models.IntegerField('Время приготовления в минутах')
 
 

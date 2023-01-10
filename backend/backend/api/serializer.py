@@ -5,40 +5,45 @@ from rest_framework import serializers
 class TagSerializers(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('id', 'name', 'color', 'slug')
+        fields = ("id", "name", "color", "slug")
 
 
 class IngredientSerializers(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ('id', 'name', 'measurement_unit')
+        fields = ("id", "name", "measurement_unit")
 
 
 class IngredientCreateSerializers(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = '__all__'
+        fields = "__all__"
 
 
 class RecipeCreateSerializers(serializers.ModelSerializer):
     def validate(self, data):
-        for el in data.get('ingredients', []):
+        for el in data.get("ingredients", []):
             if el.amount < 1.0:
-                raise serializers.ValidationError({'amount': "Убедитесь, что это значение больше либо равно 1."})
+                raise serializers.ValidationError(
+                    {
+                        "amount":
+                            "Убедитесь, что это значение больше либо равно 1."
+                    }
+                )
         return data
 
     class Meta:
         model = Recipe
-        fields = '__all__'
+        fields = "__all__"
 
 
 class RecipeForShoppingList(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
+        fields = ("id", "name", "image", "cooking_time")
 
 
 class IngredientForRecipeSerializers(serializers.ModelSerializer):
     class Meta:
         model = IngredientForRecipe
-        fields = ('ingredient', 'amount')
+        fields = ("ingredient", "amount")
