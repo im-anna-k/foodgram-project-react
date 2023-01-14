@@ -21,6 +21,10 @@ class IngredientCreateSerializers(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = "__all__"
+
     def validate(self, data):
         for el in data.get("ingredients", []):
             if el.amount < 1.0:
@@ -31,10 +35,6 @@ class RecipeCreateSerializers(serializers.ModelSerializer):
                     }
                 )
         return data
-
-    class Meta:
-        model = Recipe
-        fields = "__all__"
 
 
 class RecipeForShoppingList(serializers.ModelSerializer):
