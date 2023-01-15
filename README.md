@@ -119,3 +119,7 @@ $  python manage.py test
 ```
 $  python manage.py createsuperuser
 ```
+
+## Docker
+
+Link: https://hub.docker.com/repository/docker/mandarinmafia/foodgram-project-react/general
