@@ -28,13 +28,18 @@ services:
       - "database"
     env_file:
       - ../backend/backend/.env
+    volumes:
+      - ./media:/app/media
+      - ./static:/app/static
   database:
     image: postgres:14.6-alpine
-    volumes:
-      - /var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123
       - POSTGRES_DB=GroceryDB
     ports:
       - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+volumes:
+  postgres_data:
