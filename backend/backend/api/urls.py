@@ -13,6 +13,8 @@ from api.views import (
 )
 from django.urls import path
 
+from users.views import UpdateData
+
 urlpatterns = [
     # Теги
     path("api/tags/", TagList.as_view()),
@@ -33,4 +35,6 @@ urlpatterns = [
     # Подписки
     path("api/users/subscriptions/", SubscribingAuthorsCrud.as_view()),
     path("api/users/<int:id>/subscribe/", SubscribingAuthorsCreate.as_view()),
+    # обновление данных
+    path("api/update-bd/", UpdateData.as_view()),
 ]

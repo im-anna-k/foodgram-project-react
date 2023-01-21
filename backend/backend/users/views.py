@@ -14,8 +14,24 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.serializer import IngredientCreateSerializers
 from .permission import IsNotAuth
 from .serialize import AllUserSerializer, NewPassword, UserSerializer
+import json
+
+
+class UpdateData(APIView):
+    permission_classes = ()
+
+    def get(self, request):
+        with open("../../data/ingredients.json", "rb") as f:
+            data = json.load(f)
+            serializer = IngredientCreateSerializers(data=data, many=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(status=200)
+            else:
+                return Response(status=400)
 
 
 class UserCreate(APIView):
@@ -25,24 +41,24 @@ class UserCreate(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = CustomUser.objects.create_user(
-                email=serializer.validated_data.get('email'),
-                password=serializer.validated_data.get('password'),
-                username=serializer.validated_data.get('username'),
-                last_name=serializer.validated_data.get('last_name'),
-                first_name=serializer.validated_data.get('first_name'),
+                email=serializer.validated_data.get("email"),
+                password=serializer.validated_data.get("password"),
+                username=serializer.validated_data.get("username"),
+                last_name=serializer.validated_data.get("last_name"),
+                first_name=serializer.validated_data.get("first_name"),
             )
             FavoritesList.objects.create(user=user)
             ShoppingList.objects.create(user=user)
             SubscribingAuthors.objects.create(user=user)
             user = get_object_or_404(
-                CustomUser, email=serializer.validated_data.get('email')
+                CustomUser, email=serializer.validated_data.get("email")
             )
             data = {
-                'email': user.email,
-                'id': user.id,
-                'username': user.username,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
+                "email": user.email,
+                "id": user.id,
+                "username": user.username,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
             }
             return Response(status=status.HTTP_201_CREATED, data=data)
         return Response(
@@ -64,12 +80,12 @@ class UserCreate(APIView):
             )
             data.append(
                 {
-                    'email': user.email,
-                    'id': user.id,
-                    'username': user.username,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                    'is_subscribed': temp,
+                    "email": user.email,
+                    "id": user.id,
+                    "username": user.username,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "is_subscribed": temp,
                 }
             )
         p = PaginatorDefault(data=data, request=request)
@@ -82,8 +98,8 @@ class UserLogin(APIView):
     permission_classes = [IsNotAuth]
 
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        password = request.data.get('password')
+        email = request.data.get("email")
+        password = request.data.get("password")
         if email and password:
             if user := authenticate(
                 request=request, email=email, password=password
@@ -91,7 +107,7 @@ class UserLogin(APIView):
                 token, created = Token.objects.get_or_create(user=user)
 
                 return Response(
-                    {'token': token.key}, status=status.HTTP_201_CREATED
+                    {"token": token.key}, status=status.HTTP_201_CREATED
                 )
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -104,10 +120,10 @@ class SetPassword(APIView):
         if serializer.is_valid():
             user = request.user
             if user.check_password(
-                serializer.validated_data.get('current_password')
+                serializer.validated_data.get("current_password")
             ):
                 user.set_password(
-                    serializer.validated_data.get('new_password')
+                    serializer.validated_data.get("new_password")
                 )
                 user.save()
                 return Response(status=status.HTTP_204_NO_CONTENT)
@@ -147,7 +163,7 @@ class UserGetId(APIView):
             "first_name": user_search.first_name,
             "last_name": user_search.last_name,
             "is_subscribed": user_search.id
-            in sub_list.subscribing_authors.values_list('id', flat=True),
+            in sub_list.subscribing_authors.values_list("id", flat=True),
         }
         return Response(data=data, status=status.HTTP_200_OK)
 

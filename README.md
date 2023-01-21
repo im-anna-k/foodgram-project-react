@@ -123,3 +123,6 @@ $  python manage.py createsuperuser
 ## Docker
 
 Link: https://hub.docker.com/repository/docker/mandarinmafia/foodgram-project-react/general
+
+## Сайт
+ Link: http://130.193.39.243/
