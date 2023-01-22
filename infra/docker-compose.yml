@@ -15,10 +15,12 @@ services:
       - ../frontend/build:/usr/share/nginx/html/
       - ../backend/backend/static:/var/html/static/django/
       - ../backend/backend/media:/var/html/media/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - frontend
     links:
-        - frontend
+      - frontend
   web:
     ports:
       - "8001:8000"
