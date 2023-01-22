@@ -13,6 +13,8 @@ from api.views import (
 )
 from django.urls import path
 
+from django.conf import settings
+from django.conf.urls.static import static
 from users.views import UpdateData
 
 urlpatterns = [
@@ -37,4 +39,4 @@ urlpatterns = [
     path("api/users/<int:id>/subscribe/", SubscribingAuthorsCreate.as_view()),
     # обновление данных
     path("api/update-bd/", UpdateData.as_view()),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

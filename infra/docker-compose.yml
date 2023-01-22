@@ -16,9 +16,9 @@ services:
       - ../backend/backend/static:/var/html/static/django/
       - ../backend/backend/media:/var/html/media/
     depends_on:
-      - web
+      - frontend
     links:
-      - web
+        - frontend
   web:
     ports:
       - "8001:8000"
@@ -27,6 +27,7 @@ services:
       - ../backend/backend/media:/app/media
       - ../backend/backend/static:/app/static
       - ../backend/backend/:/app
+      - ../data/:/app/data
     depends_on:
       - "database"
     env_file:

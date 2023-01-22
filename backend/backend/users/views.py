@@ -24,7 +24,7 @@ class UpdateData(APIView):
     permission_classes = ()
 
     def get(self, request):
-        with open("../../data/ingredients.json", "rb") as f:
+        with open("data/ingredients.json", "rb") as f:
             data = json.load(f)
             serializer = IngredientCreateSerializers(data=data, many=True)
             if serializer.is_valid():
@@ -107,7 +107,7 @@ class UserLogin(APIView):
                 token, created = Token.objects.get_or_create(user=user)
 
                 return Response(
-                    {"token": token.key}, status=status.HTTP_201_CREATED
+                    {"auth_token": token.key}, status=status.HTTP_201_CREATED
                 )
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
