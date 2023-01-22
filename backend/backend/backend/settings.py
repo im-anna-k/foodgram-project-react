@@ -42,13 +42,14 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
 ]
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "web"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "web", "130.193.39.243"]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://web:8000",
     "http://127.0.0.1:8000",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://130.193.39.243"
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -60,6 +61,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://web:8000",
+    "http://130.193.39.243"
 ]
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
@@ -67,6 +69,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://web:8000",
+    "http://130.193.39.243"
 ]
 
 CORS_ORIGIN_WHITELIST = [
@@ -74,6 +77,7 @@ CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://web:8000",
+    "http://130.193.39.243"
 ]
 
 CORS_ALLOW_HEADERS = [
